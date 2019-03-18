@@ -1,0 +1,8 @@
+url: ws://localhost:3000
+
+messages:
+  a:
+    type: hello
+  b:
+    type: hmmm
+    name: geoff
