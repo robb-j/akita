@@ -79,7 +79,14 @@ export class Akita {
 
   /** Merge two config files together */
   mergeConfigs(a: Config, b: Config): Config {
-    return { ...a, ...b }
+    const output: any = { ...a }
+
+    // Only merge in from b if it is defined
+    for (let key in b) {
+      if ((b as any)[key] !== undefined) output[key] = (b as any)[key]
+    }
+
+    return output
   }
 
   /** Process a line of input and emit it to a socket */
