@@ -1,46 +1,34 @@
 #!/usr/bin/env node
 
 import program from 'commander'
-import { Akita, redCross } from './Akita'
-import { runEchoServer } from './runEchoServer'
-
-// ;(async () => {
-//   try {
-//     let akita = await Akita.fromConfig()
-//
-//     await akita.start({ url: 'ws://localhost:3000' })
-//
-//     console.log(`It's over anakin`)
-//
-//   } catch (error) {
-//     console.log(error.message)
-//     console.log(usage)
-//   }
-// })()
+import { Akita } from './Akita'
+import { EchoServer } from './EchoServer'
 
 const packageJson = require('../package.json')
 
+// Setup the program
 program
-  .name(packageJson.name)
+  .name('akita')
   .version(packageJson.version)
-  .arguments('[options] [url]')
+  .description('A cli for testing a WebSocket server')
+  .usage('[options] [url]')
 
+// Register the echo command
 program
   .command('echo')
   .description('Run a websocket echo server')
   .option('-p --port [port]', 'The port to run on [3000]', 3000)
   .action(async cmd => {
-    await runEchoServer(cmd.port)
-    console.log('Closed')
+    await EchoServer.run(cmd.port)
     process.exit(0)
   })
 
 // Fail on unknown commands
 program.on('command:*', async args => {
-  console.log('...')
-  let akita = await Akita.fromConfig()
-  console.log(akita)
-  await akita.start({ url: args[0] })
+  await Akita.run(args[0])
 })
 
-program.parse(process.argv)
+// Parse the program arguments, if there are any
+// Or just run Akita if there aren't any
+if (process.argv.length > 2) program.parse(process.argv)
+else Akita.run()

@@ -1,12 +1,5 @@
-import App from '../App'
-
-describe('sample', () => {
-  let app: App
-  beforeEach(() => {
-    app = new App()
-  })
-
-  it('should exist', async () => {
-    expect(app).toBeDefined()
+describe('Sample test', () => {
+  it('should pass', async () => {
+    expect(1 + 1).toBe(2)
   })
 })

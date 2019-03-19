@@ -5,23 +5,39 @@ import cosmiconfig from 'cosmiconfig'
 import { relative } from 'path'
 import { struct } from 'superstruct'
 
+/** A superstruct to validate an .akitarc */
 export const Config = struct({
   url: 'string?',
   messages: 'object?'
 })
 
+/** A cross character colored red for the cli */
 export const redCross = chalk.red('𐄂')
+
+/** A tick character colored green for the cli */
 export const greenTick = chalk.green('✓')
 
+/** A type to represent an .akitarc */
 export type Config = {
   url?: string
   configPath?: string
   messages?: { [idx: string]: any }
 }
 
+/** A class for running the interactive WebSocket CLI */
 export class Akita {
   constructor(public config: Config = {}) {}
-  prompt = chalk.bold.yellow(`↑`)
+  prompt = '> '
+
+  /** Perform a one-off run with config loaded from the nearest .akitarc (if found) */
+  static async run(url?: string) {
+    try {
+      let akita = await this.fromConfig()
+      await akita.start({ url })
+    } catch (error) {
+      console.log(redCross, error.message)
+    }
+  }
 
   /** Try to load config using cosmiconfig and create an instance with it */
   static async fromConfig() {
@@ -56,22 +72,29 @@ export class Akita {
     }
   }
 
-  addCursor() {
-    process.stdout.write(chalk.bold.yellow('> '))
+  /** Write the cursot to process.stdout */
+  addPrompt() {
+    process.stdout.write(this.prompt)
   }
 
+  /** Merge two config files together */
   mergeConfigs(a: Config, b: Config): Config {
     return { ...a, ...b }
   }
 
+  /** Process a line of input and emit it to a socket */
   processLine(line: string, socket: WebSocket, namedMessages: any = {}) {
-    const replaceLine = (...args: any[]) =>
-      console.log(this.prompt, line, ...args)
+    // A utility to rewrite the current line after being sent
+    const rewriteLine = (...args: any[]) =>
+      console.log(chalk.bold.yellow(`↑`), line, ...args)
 
-    if (!line.trim()) return this.addCursor()
+    // Do nothing if no message was entered
+    if (!line.trim()) return this.addPrompt()
 
+    // Start processing the line into a WebSocket payload
     let payload: any = line
 
+    // Use a named message if the line starts with @
     if (line.startsWith('@')) {
       try {
         payload = namedMessages[line.slice(1)]
@@ -84,20 +107,22 @@ export class Akita {
           payload = JSON.stringify(payload)
         }
       } catch (error) {
-        return replaceLine(redCross, error.message)
+        return rewriteLine(redCross, error.message)
       }
     }
 
+    // Send the payload to the socket & update the cli
     socket.send(payload, err => {
       readline.moveCursor(process.stdout, 0, -1)
 
-      if (err) replaceLine(redCross, err.message)
-      else replaceLine(greenTick)
+      if (err) rewriteLine(redCross, err.message)
+      else rewriteLine(greenTick)
 
-      this.addCursor()
+      this.addPrompt()
     })
   }
 
+  /** Run an instance of Akita with optional extra configuration */
   async start(args: Config = {}) {
     const { url, configPath, messages } = this.mergeConfigs(this.config, args)
 
@@ -122,7 +147,7 @@ export class Akita {
     })
 
     // Prompt the user with the cursor
-    this.addCursor()
+    this.addPrompt()
 
     io.on('line', newLine => {
       this.processLine(newLine, socket, messages)
@@ -132,7 +157,7 @@ export class Akita {
     socket.on('message', data => {
       process.stdout.write('\r')
       console.log(chalk.bold.cyan('↓'), data.toString())
-      this.addCursor()
+      this.addPrompt()
     })
 
     // Make the function call hold until io is closed
