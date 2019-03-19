@@ -18,7 +18,25 @@ akita ws://localhost:3000
 > @myCustomMessage
 ```
 
-<!-- toc-head --><!-- toc-tail -->
+<!-- toc-head -->
+
+## Table of Contents
+
+- [An example](#an-example)
+- [Installing](#installing)
+- [Usage](#usage)
+- [Predefined messages](#predefined-messages)
+- [Predefined URLs](#predefined-urls)
+- [Using the API](#using-the-api)
+- [Development](#development)
+  - [Setup](#setup)
+  - [Regular use](#regular-use)
+  - [Irregular use](#irregular-use)
+  - [Code Structure](#code-structure)
+  - [Code formatting](#code-formatting)
+  - [Publishing](#publishing)
+
+<!-- toc-tail -->
 
 ## Installing
 
@@ -127,6 +145,7 @@ if (cmd === 'echo') {
 }
 ```
 
+> I'm not sure what this is useful for, but it's possible.
 > For detailed usage see the [source code](/src).
 
 ## Development

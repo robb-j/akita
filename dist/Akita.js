@@ -9,17 +9,22 @@ const chalk_1 = __importDefault(require("chalk"));
 const cosmiconfig_1 = __importDefault(require("cosmiconfig"));
 const path_1 = require("path");
 const superstruct_1 = require("superstruct");
+/** A superstruct to validate an .akitarc */
 exports.Config = superstruct_1.struct({
     url: 'string?',
     messages: 'object?'
 });
+/** A cross character colored red for the cli */
 exports.redCross = chalk_1.default.red('𐄂');
+/** A tick character colored green for the cli */
 exports.greenTick = chalk_1.default.green('✓');
+/** A class for running the interactive WebSocket CLI */
 class Akita {
     constructor(config = {}) {
         this.config = config;
-        this.prompt = chalk_1.default.bold.yellow(`↑`);
+        this.prompt = '> ';
     }
+    /** Perform a one-off run with config loaded from the nearest .akitarc (if found) */
     static async run(url) {
         try {
             let akita = await this.fromConfig();
@@ -57,17 +62,24 @@ class Akita {
             throw new Error(`Akita failed to load: ${error.message}`);
         }
     }
-    addCursor() {
-        process.stdout.write(chalk_1.default.bold.yellow('> '));
+    /** Write the cursot to process.stdout */
+    addPrompt() {
+        process.stdout.write(this.prompt);
     }
+    /** Merge two config files together */
     mergeConfigs(a, b) {
         return Object.assign({}, a, b);
     }
+    /** Process a line of input and emit it to a socket */
     processLine(line, socket, namedMessages = {}) {
-        const replaceLine = (...args) => console.log(this.prompt, line, ...args);
+        // A utility to rewrite the current line after being sent
+        const rewriteLine = (...args) => console.log(chalk_1.default.bold.yellow(`↑`), line, ...args);
+        // Do nothing if no message was entered
         if (!line.trim())
-            return this.addCursor();
+            return this.addPrompt();
+        // Start processing the line into a WebSocket payload
         let payload = line;
+        // Use a named message if the line starts with @
         if (line.startsWith('@')) {
             try {
                 payload = namedMessages[line.slice(1)];
@@ -79,18 +91,20 @@ class Akita {
                 }
             }
             catch (error) {
-                return replaceLine(exports.redCross, error.message);
+                return rewriteLine(exports.redCross, error.message);
             }
         }
+        // Send the payload to the socket & update the cli
         socket.send(payload, err => {
             readline_1.default.moveCursor(process.stdout, 0, -1);
             if (err)
-                replaceLine(exports.redCross, err.message);
+                rewriteLine(exports.redCross, err.message);
             else
-                replaceLine(exports.greenTick);
-            this.addCursor();
+                rewriteLine(exports.greenTick);
+            this.addPrompt();
         });
     }
+    /** Run an instance of Akita with optional extra configuration */
     async start(args = {}) {
         const { url, configPath, messages } = this.mergeConfigs(this.config, args);
         if (!url)
@@ -111,7 +125,7 @@ class Akita {
             output: process.stdout
         });
         // Prompt the user with the cursor
-        this.addCursor();
+        this.addPrompt();
         io.on('line', newLine => {
             this.processLine(newLine, socket, messages);
         });
@@ -119,7 +133,7 @@ class Akita {
         socket.on('message', data => {
             process.stdout.write('\r');
             console.log(chalk_1.default.bold.cyan('↓'), data.toString());
-            this.addCursor();
+            this.addPrompt();
         });
         // Make the function call hold until io is closed
         return new Promise(resolve => {

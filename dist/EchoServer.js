@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const http_1 = require("http");
 const ws_1 = __importDefault(require("ws"));
 const stoppable_1 = __importDefault(require("stoppable"));
+/** A http server with WebSockets that echos back any message received */
 class EchoServer {
     static async run(port = 3000) {
         // Create a http server

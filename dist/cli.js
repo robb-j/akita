@@ -8,11 +8,13 @@ const commander_1 = __importDefault(require("commander"));
 const Akita_1 = require("./Akita");
 const EchoServer_1 = require("./EchoServer");
 const packageJson = require('../package.json');
+// Setup the program
 commander_1.default
     .name('akita')
     .version(packageJson.version)
-    .description('A cli for testing websockets')
+    .description('A cli for testing a WebSocket server')
     .usage('[options] [url]');
+// Register the echo command
 commander_1.default
     .command('echo')
     .description('Run a websocket echo server')
@@ -26,10 +28,8 @@ commander_1.default.on('command:*', async (args) => {
     await Akita_1.Akita.run(args[0]);
 });
 // Parse the program arguments, if there are any
-if (process.argv.length > 2) {
+// Or just run Akita if there aren't any
+if (process.argv.length > 2)
     commander_1.default.parse(process.argv);
-}
-else {
-    // If not, just run akita
+else
     Akita_1.Akita.run();
-}
