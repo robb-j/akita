@@ -68,7 +68,13 @@ class Akita {
     }
     /** Merge two config files together */
     mergeConfigs(a, b) {
-        return Object.assign({}, a, b);
+        const output = Object.assign({}, a);
+        // Only merge in from b if it is defined
+        for (let key in b) {
+            if (b[key] !== undefined)
+                output[key] = b[key];
+        }
+        return output;
     }
     /** Process a line of input and emit it to a socket */
     processLine(line, socket, namedMessages = {}) {
