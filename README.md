@@ -5,19 +5,6 @@ Useful for sending specific or predefined messages over a WebSocket.
 
 ![A usage example](/usage.png 'Using akita CLI')
 
-## An example
-
-```bash
-# Connect to a WebSocket server
-akita ws://localhost:3000
-
-# Send up a specific json payload
-> {"type": "message", "body": "Hello, world!"}
-
-# Send a predefined message (defined in an .akitarc file)
-> @myCustomMessage
-```
-
 <!-- toc-head -->
 
 ## Table of Contents
@@ -37,6 +24,19 @@ akita ws://localhost:3000
   - [Publishing](#publishing)
 
 <!-- toc-tail -->
+
+## An example
+
+```bash
+# Connect to a WebSocket server (Exit with Ctrl+C)
+akita ws://localhost:3000
+
+# Send up a specific json payload
+> {"type": "message", "body": "Hello, world!"}
+
+# Send a predefined message (defined in an .akitarc file)
+> @myCustomMessage
+```
 
 ## Installing
 
@@ -74,12 +74,12 @@ akita echo --help
 
 ## Predefined messages
 
-You can use an `akitarc` file to specify predefined message you want to send.
+You can use an `.akitarc` file to specify predefined message you want to send.
 akita uses [cosmiconfig](https://www.npmjs.com/package/cosmiconfig)
 to load config files, so you can use:
-`akitarc`, `akitarc.json`, `akitarc.yml` or `akitarc.js` if you want.
+`.akitarc`, `akitarc.json`, `akitarc.yml` or `akitarc.js` if you want.
 
-Say you have an `akitarc.yml` file:
+Say you have an `.akitarc.yml` file:
 
 ```yml
 # Use this block to define you messages
@@ -108,7 +108,7 @@ akita ws://localhost:3000
 
 ## Predefined URLs
 
-You can also specify the WebSocket serve in you `.akitarc` file.
+You can also specify the WebSocket server's url in your `.akitarc` file.
 
 ```yaml
 url: ws://localhost:3000
@@ -125,7 +125,7 @@ akita
 You can use akita programatically by importing it in TypeScript or JavaScript.
 You might want to install it as a production dependancy in this case.
 
-Say you have a `script.js`:
+Here's an example `script.js`:
 
 ```js
 const { Akita, EchoServer } = require('akita-ws')
@@ -164,8 +164,8 @@ You'll only need to follow this setup once for your dev machine.
 # Install dependancies
 npm install
 
-# (optional) Add an akitarc file (akitarc, akitarc.yml, akitarc.json or akitarc.js)
-touch akitarc
+# (optional) Add an config file (.akitarc, .akitarc.yml, .akitarc.json or .akitarc.js)
+touch .akitarc
 ```
 
 ### Regular use
@@ -174,9 +174,9 @@ These are the commands you'll regularly run to develop the CLI, in no particular
 
 ```bash
 # Run the CLI directly with ts-node
-# -> Transpiles typescript on the fly without compiling
-# -> Use "-s" to stop npm run's mess
-# -> Use "--" to stop npm run stealing CLI arguments
+# -> Runs TypeScript on the fly without transpiles to JavaScript
+# -> Use "-s" to stop npm debug output
+# -> Use "--" to stop npm stealing CLI arguments
 #    (they get passed to npm instead of our CLI)
 npm run dev -s --
 ```
@@ -188,6 +188,7 @@ These are commands you might need to run but probably won't, also in no particul
 ```bash
 # Generate the table of contents for this readme
 # -> It'll replace content between the toc-head and toc-tail HTML comments
+# -> This runs as part of the "preversion" script
 npm run gen-readme-toc
 
 # Manually lint code with TypeScript's `tsc`
