@@ -239,6 +239,14 @@ There is a `preversion` that does a few things:
 - Transpiles typescript assets into javascript & type definitions
 - Adds those changes to git
 
+### Future work
+
+Some ideas I've had for where I want this project to go.
+
+- Parameterised / templated predefined messages
+- Different / custom serialisation methods (other that `JSON.stringify`)
+- Add unit test coverage
+
 ---
 
 > This project was setup with [robb-j/ts-node-base](https://github.com/robb-j/ts-node-base/)
