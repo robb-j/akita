@@ -246,6 +246,9 @@ Some ideas I've had for where I want this project to go.
 - Parameterised / templated predefined messages
 - Different / custom serialisation methods (other that `JSON.stringify`)
 - Add unit test coverage
+- Single usage like `akita ws://localhost @customData @hello ...`
+- Read the `akitarc` on the fly incase it changes after starting
+- Document piped usage, `cat data.json | akita`
 
 ---
 
