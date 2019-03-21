@@ -169,11 +169,22 @@ export class Akita {
 
     // Make the function call hold until io is closed
     return new Promise(resolve => {
-      io.on('close', () => {
+      let resolved = false
+
+      const finish = () => {
+        if (resolved) return
+        resolved = true
         console.log('<exit>')
-        socket.close()
-        io.close()
         resolve()
+      }
+
+      socket.on('close', () => {
+        finish()
+        io.close()
+      })
+      io.on('close', () => {
+        finish()
+        socket.close()
       })
     })
   }
