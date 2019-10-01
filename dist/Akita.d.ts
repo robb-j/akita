@@ -29,5 +29,5 @@ export declare class Akita {
     /** Process a line of input and emit it to a socket */
     processLine(line: string, socket: WebSocket, namedMessages?: any): void;
     /** Run an instance of Akita with optional extra configuration */
-    start(args?: Config): Promise<{}>;
+    start(args?: Config): Promise<unknown>;
 }

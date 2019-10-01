@@ -55,7 +55,7 @@ class Akita {
                 throw new Error(messageParts.join(' '));
             }
             else {
-                return new Akita(Object.assign({}, config, { configPath }));
+                return new Akita({ ...config, configPath });
             }
         }
         catch (error) {
@@ -68,7 +68,7 @@ class Akita {
     }
     /** Merge two config files together */
     mergeConfigs(a, b) {
-        const output = Object.assign({}, a);
+        const output = { ...a };
         // Only merge in from b if it is defined
         for (let key in b) {
             if (b[key] !== undefined)
@@ -143,11 +143,21 @@ class Akita {
         });
         // Make the function call hold until io is closed
         return new Promise(resolve => {
-            io.on('close', () => {
+            let resolved = false;
+            const finish = () => {
+                if (resolved)
+                    return;
+                resolved = true;
                 console.log('<exit>');
-                socket.close();
-                io.close();
                 resolve();
+            };
+            socket.on('close', () => {
+                finish();
+                io.close();
+            });
+            io.on('close', () => {
+                finish();
+                socket.close();
             });
         });
     }

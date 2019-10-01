@@ -1,7 +1,7 @@
 {
   "name": "akita-ws",
   "private": false,
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A little cli for testing web sockets",
   "main": "src/index.js",
   "types": "dist/index.d.ts",

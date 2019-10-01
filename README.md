@@ -7,8 +7,9 @@ Useful for sending specific or predefined messages over a WebSocket.
 
 <!-- toc-head -->
 
-## Table of Contents
+## Table of contents
 
+- [Table of Contents](#table-of-contents)
 - [An example](#an-example)
 - [Installing](#installing)
 - [Usage](#usage)
@@ -22,6 +23,7 @@ Useful for sending specific or predefined messages over a WebSocket.
   - [Code Structure](#code-structure)
   - [Code formatting](#code-formatting)
   - [Publishing](#publishing)
+  - [Future work](#future-work)
 
 <!-- toc-tail -->
 
