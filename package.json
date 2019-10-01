@@ -37,27 +37,27 @@
   "dependencies": {
     "chalk": "^2.4.2",
     "commander": "^2.19.0",
-    "cosmiconfig": "^5.1.0",
+    "cosmiconfig": "^5.2.1",
     "stoppable": "^1.1.0",
     "superstruct": "^0.6.0",
     "ws": "^6.2.0"
   },
   "devDependencies": {
     "@types/cosmiconfig": "^5.0.3",
-    "@types/jest": "^24.0.6",
-    "@types/ms": "^0.7.30",
-    "@types/node": "^11.9.4",
+    "@types/jest": "^24.0.18",
+    "@types/ms": "^0.7.31",
+    "@types/node": "^12.7.8",
     "@types/stoppable": "^1.1.0",
     "@types/superstruct": "^0.5.0",
-    "@types/ws": "^6.0.1",
-    "husky": "^1.3.1",
-    "jest": "^24.1.0",
-    "lint-staged": "^8.1.4",
-    "nodemon": "^1.18.10",
-    "prettier": "1.16.4",
-    "ts-jest": "^23.10.5",
-    "ts-node": "^8.0.2",
-    "typescript": "^3.3.3"
+    "@types/ws": "^6.0.3",
+    "husky": "^3.0.7",
+    "jest": "^24.9.0",
+    "lint-staged": "^9.4.1",
+    "nodemon": "^1.19.3",
+    "prettier": "^1.18.2",
+    "ts-jest": "^24.1.0",
+    "ts-node": "^8.4.1",
+    "typescript": "^3.6.3"
   },
   "husky": {
     "hooks": {
