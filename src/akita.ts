@@ -1,9 +1,12 @@
 import readline from 'readline'
 import WebSocket from 'ws'
 import chalk from 'chalk'
+import debugfn from 'debug'
 import { cosmiconfig } from 'cosmiconfig'
 import { relative } from 'path'
-import { struct, Failure, StructError } from 'superstruct'
+import { struct, StructError } from 'superstruct'
+
+const debug = debugfn('akita:run')
 
 /** A superstruct to validate an .akitarc */
 export const Config = struct({
@@ -43,6 +46,7 @@ export class Akita {
 
   /** Perform a one-off run with config loaded from the nearest .akitarc (if found) */
   static async run(url?: string, headers: Record<string, string> = {}) {
+    debug(`run url="${url} headers=%o"`, headers)
     try {
       let akita = await this.fromConfig()
       await akita.start({ url, headers })
@@ -143,8 +147,8 @@ export class Akita {
     const socket = new WebSocket(url, { headers })
     // Connect to the socket
     await new Promise((resolve, reject) => {
-      socket.on('open', resolve)
-      socket.on('error', reject)
+      socket.once('open', resolve)
+      socket.once('error', reject)
     })
 
     // Log information
@@ -184,10 +188,12 @@ export class Akita {
 
       socket.on('close', () => {
         finish()
+        debug('socket@close')
         io.close()
       })
       io.on('close', () => {
         finish()
+        debug('io@close')
         socket.close()
       })
     })
