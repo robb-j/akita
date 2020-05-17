@@ -9,23 +9,24 @@ export declare const greenTick: string;
 export declare type Config = {
     url?: string;
     configPath?: string;
+    headers?: Record<string, string>;
     messages?: {
         [idx: string]: any;
     };
 };
+/** Merge config b into config a */
+export declare function mergeConfigs(a: Config, b: Config): Config;
 /** A class for running the interactive WebSocket CLI */
 export declare class Akita {
     config: Config;
     constructor(config?: Config);
     prompt: string;
     /** Perform a one-off run with config loaded from the nearest .akitarc (if found) */
-    static run(url?: string): Promise<void>;
+    static run(url?: string, headers?: Record<string, string>): Promise<void>;
     /** Try to load config using cosmiconfig and create an instance with it */
     static fromConfig(): Promise<Akita>;
     /** Write the cursot to process.stdout */
     addPrompt(): void;
-    /** Merge two config files together */
-    mergeConfigs(a: Config, b: Config): Config;
     /** Process a line of input and emit it to a socket */
     processLine(line: string, socket: WebSocket, namedMessages?: any): void;
     /** Run an instance of Akita with optional extra configuration */
