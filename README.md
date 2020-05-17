@@ -9,12 +9,12 @@ Useful for sending specific or predefined messages over a WebSocket.
 
 ## Table of contents
 
-- [Table of Contents](#table-of-contents)
 - [An example](#an-example)
 - [Installing](#installing)
 - [Usage](#usage)
 - [Predefined messages](#predefined-messages)
 - [Predefined URLs](#predefined-urls)
+- [Headers](#headers)
 - [Using the API](#using-the-api)
 - [Development](#development)
   - [Setup](#setup)
@@ -120,6 +120,22 @@ Then you can run akita without a url argument.
 
 ```bash
 akita
+```
+
+## Headers
+
+You can send headers to the socket request with `--header key:value`
+or with the `headers` section of the yaml.
+
+```bash
+akita ws://localhost:3000 --header authorization:top_secret
+```
+
+or in **.akitarc.yml**
+
+```yaml
+headers:
+  authorization: top_secret
 ```
 
 ## Using the API
