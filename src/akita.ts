@@ -1,14 +1,15 @@
 import readline from 'readline'
 import WebSocket from 'ws'
 import chalk from 'chalk'
-import cosmiconfig from 'cosmiconfig'
+import { cosmiconfig } from 'cosmiconfig'
 import { relative } from 'path'
-import { struct } from 'superstruct'
+import { struct, Failure, StructError } from 'superstruct'
 
 /** A superstruct to validate an .akitarc */
 export const Config = struct({
   url: 'string?',
-  messages: 'object?'
+  messages: 'object?',
+  headers: 'object?'
 })
 
 /** A cross character colored red for the cli */
@@ -21,7 +22,18 @@ export const greenTick = chalk.green('✓')
 export type Config = {
   url?: string
   configPath?: string
+  headers?: Record<string, string>
   messages?: { [idx: string]: any }
+}
+
+/** Merge config b into config a */
+export function mergeConfigs(a: Config, b: Config): Config {
+  return {
+    url: b.url ?? a.url,
+    configPath: b.configPath ?? a.configPath,
+    headers: { ...a.headers, ...b.headers },
+    messages: { ...a.messages, ...b.messages }
+  }
 }
 
 /** A class for running the interactive WebSocket CLI */
@@ -30,10 +42,10 @@ export class Akita {
   prompt = '> '
 
   /** Perform a one-off run with config loaded from the nearest .akitarc (if found) */
-  static async run(url?: string) {
+  static async run(url?: string, headers: Record<string, string> = {}) {
     try {
       let akita = await this.fromConfig()
-      await akita.start({ url })
+      await akita.start({ url, headers })
     } catch (error) {
       console.log(redCross, error.message)
     }
@@ -52,7 +64,7 @@ export class Akita {
       // Validate the config
       let [error, config] = Config.validate(result.config)
 
-      if (error) {
+      if (error instanceof StructError) {
         const messageParts = ['Invalid config:', configPath]
 
         // Build up the error message
@@ -64,6 +76,8 @@ export class Akita {
         }
 
         throw new Error(messageParts.join(' '))
+      } else if (error) {
+        throw error
       } else {
         return new Akita({ ...config, configPath })
       }
@@ -75,18 +89,6 @@ export class Akita {
   /** Write the cursot to process.stdout */
   addPrompt() {
     process.stdout.write(this.prompt)
-  }
-
-  /** Merge two config files together */
-  mergeConfigs(a: Config, b: Config): Config {
-    const output: any = { ...a }
-
-    // Only merge in from b if it is defined
-    for (let key in b) {
-      if ((b as any)[key] !== undefined) output[key] = (b as any)[key]
-    }
-
-    return output
   }
 
   /** Process a line of input and emit it to a socket */
@@ -131,12 +133,14 @@ export class Akita {
 
   /** Run an instance of Akita with optional extra configuration */
   async start(args: Config = {}) {
-    const { url, configPath, messages } = this.mergeConfigs(this.config, args)
+    const { url, configPath, messages, headers } = mergeConfigs(
+      this.config,
+      args
+    )
 
     if (!url) throw new Error(`No url provided`)
 
-    const socket = new WebSocket(url)
-
+    const socket = new WebSocket(url, { headers })
     // Connect to the socket
     await new Promise((resolve, reject) => {
       socket.on('open', resolve)
